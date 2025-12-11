@@ -32,6 +32,12 @@ public class counselor_regis extends javax.swing.JFrame {
         jButton57 = new javax.swing.JButton();
         jLabel29 = new javax.swing.JLabel();
         jTextField141 = new javax.swing.JTextField();
+        jTextField142 = new javax.swing.JTextField();
+        jTextField143 = new javax.swing.JTextField();
+        jTextField144 = new javax.swing.JTextField();
+        jTextField145 = new javax.swing.JTextField();
+        jPasswordField29 = new javax.swing.JPasswordField();
+        jButton58 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -54,6 +60,29 @@ public class counselor_regis extends javax.swing.JFrame {
         jTextField141.setForeground(new java.awt.Color(255, 195, 51));
         jTextField141.setText("Name");
 
+        jTextField142.setForeground(new java.awt.Color(255, 195, 51));
+        jTextField142.setText("Email");
+        jTextField142.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField142ActionPerformed(evt);
+            }
+        });
+
+        jTextField143.setForeground(new java.awt.Color(255, 195, 51));
+        jTextField143.setText("Specialization");
+
+        jTextField144.setForeground(new java.awt.Color(255, 195, 51));
+        jTextField144.setText("License ID");
+
+        jTextField145.setForeground(new java.awt.Color(255, 195, 51));
+        jTextField145.setText("Password");
+
+        jPasswordField29.setText("jPasswordField29");
+
+        jButton58.setBackground(new java.awt.Color(255, 195, 51));
+        jButton58.setForeground(new java.awt.Color(255, 255, 255));
+        jButton58.setText("Register");
+
         javax.swing.GroupLayout jPanel24Layout = new javax.swing.GroupLayout(jPanel24);
         jPanel24.setLayout(jPanel24Layout);
         jPanel24Layout.setHorizontalGroup(
@@ -69,7 +98,16 @@ public class counselor_regis extends javax.swing.JFrame {
                         .addComponent(jButton57, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel24Layout.createSequentialGroup()
                         .addGap(238, 238, 238)
-                        .addComponent(jTextField141, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel24Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextField141)
+                            .addComponent(jTextField142)
+                            .addComponent(jTextField143)
+                            .addComponent(jTextField144)
+                            .addComponent(jTextField145)
+                            .addComponent(jPasswordField29, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)))
+                    .addGroup(jPanel24Layout.createSequentialGroup()
+                        .addGap(338, 338, 338)
+                        .addComponent(jButton58, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel24Layout.setVerticalGroup(
@@ -81,7 +119,19 @@ public class counselor_regis extends javax.swing.JFrame {
                 .addComponent(jLabel29)
                 .addGap(18, 18, 18)
                 .addComponent(jTextField141, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(454, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField142, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField143, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField144, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField145, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPasswordField29, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton58, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(169, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -103,6 +153,10 @@ public class counselor_regis extends javax.swing.JFrame {
         new new_account().setVisible(true);
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton57ActionPerformed
+
+    private void jTextField142ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField142ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField142ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -183,6 +237,7 @@ public class counselor_regis extends javax.swing.JFrame {
     private javax.swing.JButton jButton55;
     private javax.swing.JButton jButton56;
     private javax.swing.JButton jButton57;
+    private javax.swing.JButton jButton58;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
@@ -266,6 +321,7 @@ public class counselor_regis extends javax.swing.JFrame {
     private javax.swing.JPasswordField jPasswordField26;
     private javax.swing.JPasswordField jPasswordField27;
     private javax.swing.JPasswordField jPasswordField28;
+    private javax.swing.JPasswordField jPasswordField29;
     private javax.swing.JPasswordField jPasswordField3;
     private javax.swing.JPasswordField jPasswordField4;
     private javax.swing.JPasswordField jPasswordField5;
@@ -321,6 +377,10 @@ public class counselor_regis extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField14;
     private javax.swing.JTextField jTextField140;
     private javax.swing.JTextField jTextField141;
+    private javax.swing.JTextField jTextField142;
+    private javax.swing.JTextField jTextField143;
+    private javax.swing.JTextField jTextField144;
+    private javax.swing.JTextField jTextField145;
     private javax.swing.JTextField jTextField15;
     private javax.swing.JTextField jTextField16;
     private javax.swing.JTextField jTextField17;
