@@ -40,9 +40,13 @@ public class counselor_login_page extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(38, 36, 68));
+
         jLabel2.setFont(new java.awt.Font("Segoe UI Black", 1, 32)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("COUNSELOR");
 
+        jTextField1.setForeground(new java.awt.Color(255, 195, 51));
         jTextField1.setText("Username");
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -50,11 +54,16 @@ public class counselor_login_page extends javax.swing.JFrame {
             }
         });
 
+        jPasswordField1.setForeground(new java.awt.Color(255, 195, 51));
         jPasswordField1.setText("jPasswordField1");
 
+        jButton1.setBackground(new java.awt.Color(255, 195, 51));
         jButton1.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("LOGIN");
 
+        jButton2.setBackground(new java.awt.Color(38, 36, 68));
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Back");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
