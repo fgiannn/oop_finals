@@ -8,17 +8,39 @@ package oop_finals;
  *
  * @author Admin
  */
+import java.sql.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import java.util.Calendar;
+
 public class student_bookappointment extends javax.swing.JFrame {
+    private CustomDateEvaluator currentEvaluator = null;
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(student_bookappointment.class.getName());
 
+    private Connection conn;
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/guidance_appointment_system";
+    private static final String DB_USER = "root";
+    private static final String DB_PASS = "";
+
+    // 3. CONSTRUCTOR (modify the existing one)
+    public student_bookappointment() {
+        initComponents();
+        loadSpecializations(); // ADD THIS LINE
+        jTextArea2.setEditable(false);
+        jTextArea2.setText("Select a specialization and counselor to view details.");
+
+        // Set minimum selectable date to today
+        jCalendar1.setMinSelectableDate(new java.util.Date());
+
+        // Add property change listener to calendar
+        jCalendar1.addPropertyChangeListener("calendar", evt -> {
+            updateCalendarForSelectedCounselor();
+        });
+    }
     /**
      * Creates new form student_bookappointment
      */
-    public student_bookappointment() {
-        initComponents();
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -198,8 +220,18 @@ public class student_bookappointment extends javax.swing.JFrame {
         });
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox3ActionPerformed(evt);
+            }
+        });
 
         jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox4ActionPerformed(evt);
+            }
+        });
 
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
@@ -326,10 +358,44 @@ public class student_bookappointment extends javax.swing.JFrame {
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
+        this.dispose();
+        new student_dashboard().setVisible(true);
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:                                                                             
+        String selectedSpecialization = (String) jComboBox3.getSelectedItem();
+        String selectedCounselor = (String) jComboBox4.getSelectedItem();
+
+        if (selectedSpecialization == null || selectedSpecialization.equals("-- Select Specialization --")) {
+            JOptionPane.showMessageDialog(this, "Please select a specialization before proceeding.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (selectedCounselor == null || selectedCounselor.equals("-- Select Counselor --")) {
+            JOptionPane.showMessageDialog(this, "Please select a counselor before proceeding.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        java.util.Date selectedDate = jCalendar1.getDate();
+        if (selectedDate == null) {
+            JOptionPane.showMessageDialog(this, "Please select a date from the calendar.",
+                    "Date Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Get counselor ID
+        int counselorId = getSelectedCounselorId();
+
+        if (counselorId == -1) {
+            JOptionPane.showMessageDialog(this, "Error retrieving counselor information.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Proceed to next page
         student_bookappointment2nd d = new student_bookappointment2nd();
         d.setVisible(true);
         this.dispose();
@@ -337,8 +403,382 @@ public class student_bookappointment extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        String selectedSpecialization = (String) jComboBox3.getSelectedItem();
+        String selectedCounselor = (String) jComboBox4.getSelectedItem();
+        
+        if (selectedSpecialization == null || selectedSpecialization.equals("-- Select Specialization --")) {
+            JOptionPane.showMessageDialog(this, "Please select a specialization first.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (selectedCounselor == null || selectedCounselor.equals("-- Select Counselor --")) {
+            JOptionPane.showMessageDialog(this, "Please select a counselor.",
+                    "Selection Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "You have selected:\nCounselor: " + selectedCounselor + 
+                "\nSpecialization: " + selectedSpecialization + "\n\nProceed?",
+                "Confirm Selection",
+                JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            JOptionPane.showMessageDialog(this, "Counselor selected successfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jComboBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox4ActionPerformed
+        // TODO add your handling code here:
+        String selectedCounselor = (String) jComboBox4.getSelectedItem();
+
+    if (selectedCounselor != null && !selectedCounselor.equals("-- Select Counselor --")) {
+        displayCounselorInfo(selectedCounselor);
+
+        // Apply calendar restrictions for selected counselor
+        int counselorId = getSelectedCounselorId();
+        if (counselorId != -1) {
+            applyCounselorScheduleToCalendar(counselorId);
+        }
+    } else {
+        jTextArea2.setText("Select a counselor to view details.");
+        
+        // Remove evaluator when no counselor selected
+        if (currentEvaluator != null) {
+            try {
+                jCalendar1.getDayChooser().removeDateEvaluator(currentEvaluator);
+                currentEvaluator = null;
+                jCalendar1.getDayChooser().setCalendar(jCalendar1.getCalendar());
+                jCalendar1.updateUI();
+            } catch (Exception e) {
+                // Ignore if removal fails
+            }
+        }
+    }
+    }//GEN-LAST:event_jComboBox4ActionPerformed
+
+    private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
+        // TODO add your handling code here:
+        String selectedSpecialization = (String) jComboBox3.getSelectedItem();
+        
+        if (selectedSpecialization != null && !selectedSpecialization.equals("-- Select Specialization --")) {
+            loadCounselorsBySpecialization(selectedSpecialization);
+        } else {
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            model.addElement("-- Select Counselor --");
+            jComboBox4.setModel(model);
+            jTextArea2.setText("Select a specialization and counselor to view details.");
+        }
+    }//GEN-LAST:event_jComboBox3ActionPerformed
+
+    private Connection getConnection() {
+        try {
+            if (conn == null || conn.isClosed()) {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+            }
+            return conn;
+        } catch (ClassNotFoundException | SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Database connection error", e);
+            JOptionPane.showMessageDialog(this, "Database connection failed: " + e.getMessage(),
+                    "Connection Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+    
+    private void loadSpecializations() {
+        try {
+            Connection connection = getConnection();
+            if (connection == null) return;
+            
+            String query = "SELECT DISTINCT specialization FROM counselors WHERE status = 'Active' ORDER BY specialization";
+            PreparedStatement pst = connection.prepareStatement(query);
+            ResultSet rs = pst.executeQuery();
+            
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            model.addElement("-- Select Specialization --");
+            
+            while (rs.next()) {
+                model.addElement(rs.getString("specialization"));
+            }
+            
+            jComboBox3.setModel(model);
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error loading specializations", e);
+            JOptionPane.showMessageDialog(this, "Error loading specializations: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void loadCounselorsBySpecialization(String specialization) {
+        try {
+            Connection connection = getConnection();
+            if (connection == null) return;
+            
+            String query = "SELECT counselor_id, name FROM counselors WHERE specialization = ? AND status = 'Active' ORDER BY name";
+            PreparedStatement pst = connection.prepareStatement(query);
+            pst.setString(1, specialization);
+            ResultSet rs = pst.executeQuery();
+            
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            model.addElement("-- Select Counselor --");
+            
+            while (rs.next()) {
+                String counselorDisplay = rs.getString("name");
+                model.addElement(counselorDisplay);
+            }
+            
+            jComboBox4.setModel(model);
+            jTextArea2.setText("");
+            
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error loading counselors", e);
+            JOptionPane.showMessageDialog(this, "Error loading counselors: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void displayCounselorInfo(String counselorName) {
+        try {
+            Connection connection = getConnection();
+            if (connection == null) return;
+            
+            String query = "SELECT * FROM counselors WHERE name = ? AND status = 'Active'";
+            PreparedStatement pst = connection.prepareStatement(query);
+            pst.setString(1, counselorName);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                StringBuilder info = new StringBuilder();
+                info.append("═══════════════════════════════════\n");
+                info.append("           COUNSELOR DETAILS\n");
+                info.append("═══════════════════════════════════\n\n");
+                info.append("Name: ").append(rs.getString("name")).append("\n");
+                info.append("Specialization: ").append(rs.getString("specialization")).append("\n");
+                info.append("Email: ").append(rs.getString("email")).append("\n");
+                info.append("License Number: ").append(rs.getString("license_number")).append("\n");
+                info.append("Status: ").append(rs.getString("status")).append("\n\n");
+                info.append("═══════════════════════════════════\n");
+                
+                jTextArea2.setText(info.toString());
+            } else {
+                jTextArea2.setText("Counselor information not found.");
+            }
+            
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error loading counselor info", e);
+            JOptionPane.showMessageDialog(this, "Error loading counselor information: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public int getSelectedCounselorId() {
+        try {
+            String selectedCounselor = (String) jComboBox4.getSelectedItem();
+            if (selectedCounselor == null || selectedCounselor.equals("-- Select Counselor --")) {
+                return -1;
+            }
+            
+            Connection connection = getConnection();
+            if (connection == null) return -1;
+            
+            String query = "SELECT counselor_id FROM counselors WHERE name = ? AND status = 'Active'";
+            PreparedStatement pst = connection.prepareStatement(query);
+            pst.setString(1, selectedCounselor);
+            ResultSet rs = pst.executeQuery();
+            
+            int counselorId = -1;
+            if (rs.next()) {
+                counselorId = rs.getInt("counselor_id");
+            }
+            
+            rs.close();
+            pst.close();
+            return counselorId;
+            
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error getting counselor ID", e);
+            return -1;
+        }
+    }
+    
+    @Override
+    public void dispose() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error closing connection", e);
+        }
+        super.dispose();
+    }
+    
+    private void updateCalendarForSelectedCounselor() {
+    int counselorId = getSelectedCounselorId();
+
+    if (counselorId == -1) {
+        return; // No counselor selected
+    }
+
+    java.util.Date selectedDate = jCalendar1.getDate();
+
+    if (selectedDate == null) {
+        return;
+    }
+
+    // Check if the selected date is available
+    if (!CalendarHelper.isDateAvailable(counselorId, selectedDate)) {
+        // Get the day name for better message
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(selectedDate);
+        String[] days = {"", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        String dayName = days[cal.get(java.util.Calendar.DAY_OF_WEEK)];
+
+        JOptionPane.showMessageDialog(this,
+            "The counselor is not available on " + dayName + "s or this specific date is blocked.\nPlease select another date.",
+            "Date Unavailable",
+            JOptionPane.WARNING_MESSAGE);
+
+        // Clear the selection by updating UI instead of setting to null
+        jCalendar1.getDayChooser().setDay(jCalendar1.getDayChooser().getDay());
+    }
+}
+    
+    private void applyCounselorScheduleToCalendar(int counselorId) {
+    try {
+        // Remove old evaluator if it exists
+        if (currentEvaluator != null) {
+            try {
+                jCalendar1.getDayChooser().removeDateEvaluator(currentEvaluator);
+            } catch (Exception e) {
+                // Ignore if removal fails
+            }
+        }
+        
+        // Create and add new evaluator
+        currentEvaluator = new CustomDateEvaluator(counselorId);
+        jCalendar1.getDayChooser().addDateEvaluator(currentEvaluator);
+        
+        // Force calendar refresh
+        jCalendar1.getDayChooser().setCalendar(jCalendar1.getCalendar());
+        jCalendar1.updateUI();
+        
+        // Update text area with schedule info
+        displayCounselorSchedule(counselorId);
+        
+    } catch (Exception e) {
+        logger.log(java.util.logging.Level.SEVERE, "Error applying calendar restrictions", e);
+    }
+}
+    
+    private void displayCounselorSchedule(int counselorId) {
+    try {
+        Connection connection = getConnection();
+        if (connection == null) return;
+        
+        // Get counselor basic info
+        String infoQuery = "SELECT name, specialization, email, license_number FROM counselors WHERE counselor_id = ?";
+        PreparedStatement infoPst = connection.prepareStatement(infoQuery);
+        infoPst.setInt(1, counselorId);
+        ResultSet infoRs = infoPst.executeQuery();
+        
+        StringBuilder info = new StringBuilder();
+        
+        if (infoRs.next()) {
+            info.append("═══════════════════════════════════\n");
+            info.append("           COUNSELOR DETAILS\n");
+            info.append("═══════════════════════════════════\n\n");
+            info.append("Name: ").append(infoRs.getString("name")).append("\n");
+            info.append("Specialization: ").append(infoRs.getString("specialization")).append("\n");
+            info.append("Email: ").append(infoRs.getString("email")).append("\n");
+            info.append("License Number: ").append(infoRs.getString("license_number")).append("\n\n");
+        }
+        
+        infoRs.close();
+        infoPst.close();
+        
+        // Get schedule
+        String schedQuery = "SELECT day_of_week, start_time, end_time FROM counselor_schedules " +
+                           "WHERE counselor_id = ? AND is_available = TRUE ORDER BY " +
+                           "FIELD(day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')";
+        PreparedStatement schedPst = connection.prepareStatement(schedQuery);
+        schedPst.setInt(1, counselorId);
+        ResultSet schedRs = schedPst.executeQuery();
+        
+        info.append("AVAILABILITY SCHEDULE:\n");
+        info.append("───────────────────────────────────\n");
+        
+        boolean hasSchedule = false;
+        while (schedRs.next()) {
+            hasSchedule = true;
+            String day = schedRs.getString("day_of_week");
+            String startTime = schedRs.getString("start_time");
+            String endTime = schedRs.getString("end_time");
+            
+            info.append(String.format("%-10s: %s - %s\n", day, 
+                formatTime(startTime), formatTime(endTime)));
+        }
+        
+        if (!hasSchedule) {
+            info.append("No schedule available\n");
+        }
+        
+        schedRs.close();
+        schedPst.close();
+        
+        // Get blocked dates
+        String blockedQuery = "SELECT blocked_date, reason FROM counselor_blocked_dates " +
+                             "WHERE counselor_id = ? AND blocked_date >= CURDATE() ORDER BY blocked_date LIMIT 5";
+        PreparedStatement blockedPst = connection.prepareStatement(blockedQuery);
+        blockedPst.setInt(1, counselorId);
+        ResultSet blockedRs = blockedPst.executeQuery();
+        
+        info.append("\n");
+        if (blockedRs.next()) {
+            info.append("UPCOMING BLOCKED DATES:\n");
+            info.append("───────────────────────────────────\n");
+            do {
+                String date = blockedRs.getString("blocked_date");
+                String reason = blockedRs.getString("reason");
+                info.append(String.format("%s - %s\n", date, 
+                    reason != null ? reason : "Not available"));
+            } while (blockedRs.next());
+        }
+        
+        blockedRs.close();
+        blockedPst.close();
+        
+        info.append("\n═══════════════════════════════════\n");
+        info.append("Note: Unavailable dates are shown\n");
+        info.append("in red on the calendar.\n");
+        
+        jTextArea2.setText(info.toString());
+        
+    } catch (SQLException e) {
+        logger.log(java.util.logging.Level.SEVERE, "Error loading counselor schedule", e);
+    }
+}
+
+// Helper method to format time
+private String formatTime(String time) {
+    try {
+        java.text.SimpleDateFormat inputFormat = new java.text.SimpleDateFormat("HH:mm:ss");
+        java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("hh:mm a");
+        java.util.Date date = inputFormat.parse(time);
+        return outputFormat.format(date);
+    } catch (Exception e) {
+        return time;
+    }
+}
     /**
      * @param args the command line arguments
      */

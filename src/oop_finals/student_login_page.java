@@ -260,8 +260,8 @@ public class student_login_page extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 */
         javax.swing.JOptionPane.showMessageDialog(this, 
-            "Login successful!\nUsername: " + username, 
-            "Success", 
+            "Login successful!" , 
+            "Student", 
             javax.swing.JOptionPane.INFORMATION_MESSAGE);
         
         student_dashboard a = new student_dashboard();
