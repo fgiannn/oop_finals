@@ -8,6 +8,11 @@ package oop_finals;
  *
  * @author Gian
  */
+
+import java.awt.Color;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
 public class student_login_page extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(student_login_page.class.getName());
@@ -17,8 +22,65 @@ public class student_login_page extends javax.swing.JFrame {
      */
     public student_login_page() {
         initComponents();
+        setupPlaceholders();
     }
-
+    
+    private void setupPlaceholders() {
+        // Setup username placeholder
+        setupPlaceholder(jTextField1, "Username");
+        
+        // Setup password placeholder
+        setupPasswordPlaceholder(jPasswordField1, "Password");
+    }
+    
+    private void setupPlaceholder(javax.swing.JTextField textField, String placeholder) {
+        textField.setText(placeholder);
+        textField.setForeground(Color.GRAY);
+        
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(new Color(255, 195, 51)); // Your yellow color
+                }
+            }
+            
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField.getText().isEmpty()) {
+                    textField.setText(placeholder);
+                    textField.setForeground(Color.GRAY);
+                }
+            }
+        });
+    }
+    
+    private void setupPasswordPlaceholder(javax.swing.JPasswordField passwordField, String placeholder) {
+        passwordField.setText(placeholder);
+        passwordField.setForeground(Color.GRAY);
+        passwordField.setEchoChar((char) 0); // Show placeholder text normally
+        
+        passwordField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (String.valueOf(passwordField.getPassword()).equals(placeholder)) {
+                    passwordField.setText("");
+                    passwordField.setForeground(new Color(255, 195, 51)); // Your yellow color
+                    passwordField.setEchoChar('•'); // Hide password with bullets
+                }
+            }
+            
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (String.valueOf(passwordField.getPassword()).isEmpty()) {
+                    passwordField.setText(placeholder);
+                    passwordField.setForeground(Color.GRAY);
+                    passwordField.setEchoChar((char) 0); // Show placeholder
+                }
+            }
+        });
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -48,12 +110,21 @@ public class student_login_page extends javax.swing.JFrame {
         jTextField1.setText("Username");
 
         jPasswordField1.setForeground(new java.awt.Color(255, 195, 51));
-        jPasswordField1.setText("jPasswordField1");
+        jPasswordField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPasswordField1ActionPerformed(evt);
+            }
+        });
 
         jButton1.setBackground(new java.awt.Color(255, 195, 51));
         jButton1.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("LOGIN");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setBackground(new java.awt.Color(38, 36, 68));
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
@@ -124,6 +195,79 @@ public class student_login_page extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
+        // TODO add your handling code here:
+        jButton1ActionPerformed(evt);
+    }//GEN-LAST:event_jPasswordField1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String username = jTextField1.getText();
+        String password = String.valueOf(jPasswordField1.getPassword());
+        
+        if (username.equals("Username") || username.trim().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Please enter your username!", 
+                "Validation Error", 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            jTextField1.requestFocus();
+            return;
+        }
+        
+        if (password.equals("Password") || password.trim().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Please enter your password!", 
+                "Validation Error", 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            jPasswordField1.requestFocus();
+            return;
+        }
+        
+        
+        // TODO: Add database authentication here
+        // Example:
+        /*
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "SELECT u.*, s.* FROM users u " +
+                          "JOIN students s ON u.user_id = s.user_id " +
+                          "WHERE s.email = ? AND s.password = ? AND u.status = 'Active'";
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setString(1, username);
+            pst.setString(2, password);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                // Login successful
+                int studentId = rs.getInt("student_id");
+                String name = rs.getString("name");
+                
+                // Open student dashboard
+                this.dispose();
+                new student_dashboard(studentId, name).setVisible(true);
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Invalid username or password!", 
+                    "Login Failed", 
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Database error: " + e.getMessage(), 
+                "Error", 
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+*/
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Login successful!\nUsername: " + username, 
+            "Success", 
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        
+        student_dashboard a = new student_dashboard();
+        a.setVisible(true);
+        this.dispose();
+    }    
     /**
      * @param args the command line arguments
      */
