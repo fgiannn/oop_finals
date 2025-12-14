@@ -4,6 +4,8 @@
  */
 package oop_finals;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Admin
@@ -361,6 +363,16 @@ public class student_dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        int confirmation = JOptionPane.showConfirmDialog(null, 
+                "Are you sure you want to logout?",
+                "Confirm logout",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+        
+        if (confirmation == JOptionPane.YES_OPTION) {
+            this.dispose();
+            new login_page().setVisible(true);
+        }
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton7ActionPerformed
 
