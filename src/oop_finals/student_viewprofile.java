@@ -154,56 +154,7 @@ public class student_viewprofile extends javax.swing.JFrame {
        }
    }
     
-    /**
-     * Update student profile in database
-     */
-    private boolean updateStudentProfile() {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        
-        try {
-            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            
-            String query = "UPDATE students SET name = ?, email = ?, course = ?, year_level = ? WHERE student_id = ?";
-            pstmt = conn.prepareStatement(query);
-            
-            pstmt.setString(1, jTextField1.getText().trim());
-            pstmt.setString(2, jTextField2.getText().trim());
-            pstmt.setString(3, jTextField3.getText().trim());
-            pstmt.setString(4, jTextField4.getText().trim());
-            pstmt.setInt(5, currentStudentId);
-            
-            int rowsAffected = pstmt.executeUpdate();
-            
-            if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(this,
-                    "Profile updated successfully!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-                return true;
-            } else {
-                JOptionPane.showMessageDialog(this,
-                    "Failed to update profile.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-            
-        } catch (SQLException e) {
-            logger.log(java.util.logging.Level.SEVERE, "Error updating student profile", e);
-            JOptionPane.showMessageDialog(this,
-                "Error updating profile: " + e.getMessage(),
-                "Database Error",
-                JOptionPane.ERROR_MESSAGE);
-            return false;
-        } finally {
-            closeResources(null, pstmt, conn);
-        }
-    }
     
-    /**
-     * Set text fields to editable or read-only
-     */
     private void setTextFieldsEditable(boolean editable) {
         jTextField1.setEditable(editable);
         jTextField2.setEditable(editable);
